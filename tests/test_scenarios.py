@@ -63,12 +63,6 @@ print(seen["timeout"])
 }
 
 
-@pytest.fixture(scope="session")
-def built(tmp_path_factory):
-    out = tmp_path_factory.mktemp("build")
-    return {sid: build_workspace(sid, out) for sid in REGISTRY}
-
-
 def git(repo: Path, *args: str) -> str:
     return subprocess.run(["git", *args], cwd=repo, check=True, capture_output=True, text=True).stdout.strip()
 
