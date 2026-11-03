@@ -14,7 +14,7 @@ to measure how well it does and how that changes when the prompt or the model ch
 | Sandbox service (`sandbox/`) | done |
 | Scenarios s01-s03 + log simulator + workspace builder (`incident_lab/`) | done |
 | Read-only investigation tools + MCP server (`incident_lab/tools.py`, `mcp_server.py`) | done |
-| Own agent loop on the Messages API | next |
+| Own agent loop on the Messages API (`incident_lab/agent.py`) | **your exercise**: skeleton + tests, see below |
 | Evals (graders, runner, results per prompt version) | planned |
 | Tracing (OpenTelemetry → Langfuse) | planned |
 | Scenarios s04-s10, including decoys | planned |
@@ -53,6 +53,24 @@ uv run python -m incident_lab.workspace all     # builds ./build/
 
 The scenario tests build every workspace and check that the fault is real in the workspace code, that git
 history points at the culprit, that builds are deterministic, and that no ground truth leaks into the workspace.
+
+## Your turn: the agent loop
+
+The lab infrastructure above is finished on purpose; the parts that teach agent engineering are left for you to write.
+`incident_lab/agent.py` is a skeleton with three functions marked `TODO` (tool definitions, safe tool execution,
+the loop itself), each with hints and the gotchas that usually bite. `tests/test_agent.py` is the specification and
+runs against a scripted fake client, so it needs no API key and no network.
+
+```bash
+uv run pytest tests/test_agent.py -q                          # red until you implement the TODOs
+uv run pytest tests/test_agent.py -q -k tool_definitions      # one topic at a time
+uv run pytest --ignore=tests/test_agent.py                    # the rest of the suite, already green
+```
+
+Suggested order: TODO 1 `tool_definitions`, TODO 2 `execute_tool`, TODO 3 `run_agent`. The tests were checked
+against a reference implementation, and against deliberately broken variants (no tool-name whitelist, tool results
+split across messages, budget checked before a valid report, no report validation) to make sure they catch the
+mistakes that matter. Next phases follow the same pattern: evals and tracing arrive as skeletons too.
 
 ## Investigation tools and MCP server
 
